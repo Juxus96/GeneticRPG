@@ -3,13 +3,15 @@
 public class Boss : MonoBehaviour
 {
     public float damage = 30;
-    public float health = 500;
+    public float health = 300;
     public float maxHealth = 500;
     public int attackTemp = 3;
-    //public bool defending = false;
+    public bool IsDead { get; set; }
 
-    public void RecieveDamage(float damage)
+    public void Hit(float damage)
     {
-        /*if (!defending)*/ health -= damage;
+        health = Mathf.Clamp(health - damage, 0, maxHealth);
+        IsDead = health <= 0;
+       
     }
 }

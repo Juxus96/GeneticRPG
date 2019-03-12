@@ -8,12 +8,11 @@ public class Hero : MonoBehaviour
     public float baseDamage = 10;
     public float health = 50;
     private bool defending = false;
-    private bool buffed = false;
     private int turnsBuffed = 0;
+    private int buffedTurns = 1;
     public DNA dna;
 
     public bool isDead = false;
-
 
     public void InitHero(DNA newDna)
     {
@@ -27,26 +26,17 @@ public class Hero : MonoBehaviour
 
     public void Buff()
     {
-        if (buffed) turnsBuffed--;
+        turnsBuffed = buffedTurns;
         damage = buffedDamage;
-        buffed = true;
     }
 
     public void TurnEnd()
     {
-        if (turnsBuffed >= 1 && buffed)
-        {
-            turnsBuffed--;
+        if (turnsBuffed-- <= 0)
             damage = baseDamage;
-            buffed = true;
-        }
-        else
-        {
-            turnsBuffed++;
-        }
     }
 
-    public void RecieveDamage(float damage)
+    public void Hit(float damage)
     {
         if (!defending) health -= damage;
         isDead = health <= 0;

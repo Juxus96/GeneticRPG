@@ -21,30 +21,31 @@ public class Fight : MonoBehaviour
         hero = Instantiate(hero,heroSpawn);
         boss = Instantiate(boss,bossSpawn);
         hero.InitHero(dna);
-        StartCoroutine(HeroTurn());
+        //StartCoroutine(HeroTurn());
     }
     
-
     public float fightScore
     {
         get
         {
-            float score = boss.maxHealth - boss.health + nextAction*7;
-            if (boss.health == 0) { score += 1000 / nextAction; print("boss died"); }
+            float score = nextAction * 20 + (boss.maxHealth - boss.health);
+            if (boss.IsDead) { score += 1000 / nextAction; }
             return score;
         }
     }
 
-    private IEnumerator HeroTurn()
+    public void HeroTurn()
     {
-        yield return new WaitForSeconds(0.1f);
-        if (!hasFinished)
+        // TODO OUTSIDE FOR HERE ON FIGHT CONTROLLER, DO NOT COROUTINE ON EVERY FIGHT
+        //yield return new WaitForSeconds(0.03f);
+        hero.TurnStart();
+
+        if (nextAction < hero.dna.genes.Count && !boss.IsDead)
         {
-            hero.TurnStart();
-            switch(hero.dna.genes[nextAction])
+            switch (hero.dna.genes[nextAction])
             {
                 case DNA.Actions.ATTACK:
-                    boss.RecieveDamage(hero.damage);
+                    boss.Hit(hero.damage);
                     break;
                 case DNA.Actions.DEFEND:
                     hero.Defend();
@@ -53,35 +54,26 @@ public class Fight : MonoBehaviour
                     hero.Buff();
                     break;
             }
-            if (nextAction == hero.dna.genes.Count || boss.health == 0)
-            {
-                hasFinished = true;
-            }
-            else
-            {
-                nextAction++;
-                hero.TurnEnd();
-                StartCoroutine(BossTurn());
-            }
+
+            nextAction++;
+            hero.TurnEnd();
+        }
+        else
+        {
+            hasFinished = true;
         }
     }
 
 
-    private IEnumerator BossTurn()
+    public void BossTurn()
     {
-        yield return new WaitForSeconds(0.1f);
-        if (!hasFinished)
-        {
-            if (nextAction % boss.attackTemp == 0) hero.RecieveDamage(boss.damage);
-            if (hero.isDead)
-            {
-                hasFinished = true;
-            }
-            else
-            {
-                StartCoroutine(HeroTurn());
-            }
-        }
+        // TODO OUTSIDE FOR HERE ON FIGHT CONTROLLER, DO NOT COROUTINE ON EVERY FIGHT
+        //yield return new WaitForSeconds(0.03f);
+        if (nextAction % boss.attackTemp == 0)
+            hero.Hit(boss.damage);
+        if (hero.isDead)
+            hasFinished = true;
+        
     }
 
 }

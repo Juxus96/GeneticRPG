@@ -16,7 +16,7 @@ public class DNA
     {
         for(int i = 0; i < genomeLenght; i++)
         {
-            genes.Add((Actions)Random.Range(0,2));
+            genes.Add((Actions)Random.Range(0, 3));
         }
     }
     public DNA(DNA parent, DNA partner, float mutationRate=0.01f)

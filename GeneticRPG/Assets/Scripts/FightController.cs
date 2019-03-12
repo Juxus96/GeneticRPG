@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FightController : MonoBehaviour
@@ -8,6 +9,7 @@ public class FightController : MonoBehaviour
     public int FightCount = 10;
     public int fightSteps = 10;
     public float cutoff = 0.3f;
+    public float timePerTurn = 0.2f;
     private float gen = 0;
     
     /// <summary>
@@ -17,10 +19,14 @@ public class FightController : MonoBehaviour
     {
         for(int i = 0; i < FightCount; i++)
         {
-            GameObject go = Instantiate(FightPrefab);
+            GameObject go = Instantiate(FightPrefab , new Vector3(0, 0, i * 5), FightPrefab.transform.rotation);
             go.GetComponent<Fight>().StartFight(new DNA(fightSteps));
+            go.name = "Fight " + i;
             fightList.Add(go.GetComponent<Fight>());
         }
+
+        StartCoroutine(HeroTurns());
+        
     }
 
     /// <summary>
@@ -37,7 +43,8 @@ public class FightController : MonoBehaviour
         {
             survivors.Add(GetFittest());
         }
-        print(survivors[0].fightScore);
+
+        Debug.Log("Best fighter. Score: " + survivors[0].fightScore + " Boss Health: " + survivors[0].boss.health + " / " + survivors[0].boss.maxHealth + " Total turns: " + survivors[0].nextAction + " Hero Health: " + survivors[0].hero.health);// + survivors[0].hero);
 
         //kilss the rest of fights
         for (int i = 0; i < fightList.Count; i++)
@@ -52,11 +59,13 @@ public class FightController : MonoBehaviour
         {
             for (int i = 0; i < survivors.Count && fightList.Count < FightCount; i++)
             {
-                GameObject go = Instantiate(FightPrefab);
+                GameObject go = Instantiate(FightPrefab, new Vector3(0, 0, i * 5), FightPrefab.transform.rotation);
                 go.GetComponent<Fight>().StartFight(new DNA(survivors[i].hero.dna, survivors[Random.Range(0, 10)].hero.dna));
                 fightList.Add(go.GetComponent<Fight>());
             }
         }
+
+        StartCoroutine(HeroTurns());
 
         //clear survivors list
         for (int i = 0; i < survivors.Count; i++)
@@ -64,17 +73,50 @@ public class FightController : MonoBehaviour
             Destroy(survivors[i].gameObject);
         }
     }
+
     private void Start()
     {
         InitPopulation();
     }
+
     private void Update()
     {
+       
         if (!HasActive())
         {
             NextGeneration();
         }
     }
+
+    private IEnumerator HeroTurns()
+    {
+        yield return new WaitForSeconds(timePerTurn);
+
+        foreach (Fight fight in fightList)
+        {
+            if (!fight.hasFinished)
+                fight.HeroTurn();
+        }
+
+        if (HasActive())
+            StartCoroutine(BossTurns());
+
+    }
+
+    private IEnumerator BossTurns()
+    {
+        yield return new WaitForSeconds(timePerTurn);
+
+        foreach (Fight fight in fightList)
+        {
+            if (!fight.hasFinished)
+                fight.BossTurn();
+        }
+
+        if (HasActive())
+            StartCoroutine(HeroTurns());
+    }
+   
 
     Fight GetFittest()
     {
@@ -88,10 +130,11 @@ public class FightController : MonoBehaviour
                 index = i;
             }
         }
-        Fight bestFight = fightList[0];
+        Fight bestFight = fightList[index];
         fightList.Remove(bestFight);
         return bestFight;
     }
+
     bool HasActive()
     {
         
