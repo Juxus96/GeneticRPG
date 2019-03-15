@@ -18,12 +18,7 @@ public class FightController : MonoBehaviour
     void InitPopulation()
     {
         for(int i = 0; i < FightCount; i++)
-        {
-            GameObject go = Instantiate(FightPrefab , new Vector3(0, 0, i * 5), FightPrefab.transform.rotation);
-            go.GetComponent<Fight>().StartFight(new DNA(fightSteps));
-            go.name = "Fight " + i;
-            fightList.Add(go.GetComponent<Fight>());
-        }
+            fightList.Add(CreateFight(new Vector3(0, 0, i * 5), new DNA(fightSteps)));
 
         StartCoroutine(HeroTurns());
         
@@ -34,44 +29,33 @@ public class FightController : MonoBehaviour
     /// </summary>
     void NextGeneration()
     {
-        print("Gen: " + gen++);
+        // Get survivors (the best fighters)
         int survivorCut = Mathf.RoundToInt(FightCount * cutoff);
         List<Fight> survivors = new List<Fight>();
-
-        //gets the best scores of the last generation
         for(int i = 0; i < survivorCut; i++)
-        {
             survivors.Add(GetFittest());
-        }
 
-        Debug.Log("Best fighter. Score: " + survivors[0].fightScore + " Boss Health: " + survivors[0].boss.health + " / " + survivors[0].boss.maxHealth + " Total turns: " + survivors[0].nextAction + " Hero Health: " + survivors[0].hero.health);// + survivors[0].hero);
+        Debug.Log("Gen: " + gen++ + " Survivors: " + survivors.Count);
+        Fight bestFight = survivors[0];
+        Debug.Log("Best fighter. Score: " + bestFight.fightScore + " Boss Health: " + bestFight.boss.health + " / " + bestFight.boss.maxHealth + " Total turns: " + bestFight.turnCount + " Hero Health: " + bestFight.hero.Health);
 
-        //kilss the rest of fights
+        // Destroy every other fight
         for (int i = 0; i < fightList.Count; i++)
-        {
             Destroy(fightList[i].gameObject);
-        }
 
-        ////clears the new gen fightlists and completes it with the new gen
+        // Clears old fightList
         fightList.Clear();
 
+        // Create new fights
         while (fightList.Count < FightCount)
-        {
             for (int i = 0; i < survivors.Count && fightList.Count < FightCount; i++)
-            {
-                GameObject go = Instantiate(FightPrefab, new Vector3(0, 0, i * 5), FightPrefab.transform.rotation);
-                go.GetComponent<Fight>().StartFight(new DNA(survivors[i].hero.dna, survivors[Random.Range(0, 10)].hero.dna));
-                fightList.Add(go.GetComponent<Fight>());
-            }
-        }
+                fightList.Add(CreateFight(new Vector3(0, 0, i * 5), new DNA(survivors[i].hero.dna, survivors[Random.Range(0, 10)].hero.dna)));
 
         StartCoroutine(HeroTurns());
 
-        //clear survivors list
+        // Destroy survivors list
         for (int i = 0; i < survivors.Count; i++)
-        {
             Destroy(survivors[i].gameObject);
-        }
     }
 
     private void Start()
@@ -81,11 +65,8 @@ public class FightController : MonoBehaviour
 
     private void Update()
     {
-       
         if (!HasActive())
-        {
             NextGeneration();
-        }
     }
 
     private IEnumerator HeroTurns()
@@ -93,14 +74,11 @@ public class FightController : MonoBehaviour
         yield return new WaitForSeconds(timePerTurn);
 
         foreach (Fight fight in fightList)
-        {
             if (!fight.hasFinished)
                 fight.HeroTurn();
-        }
 
         if (HasActive())
             StartCoroutine(BossTurns());
-
     }
 
     private IEnumerator BossTurns()
@@ -108,15 +86,20 @@ public class FightController : MonoBehaviour
         yield return new WaitForSeconds(timePerTurn);
 
         foreach (Fight fight in fightList)
-        {
             if (!fight.hasFinished)
                 fight.BossTurn();
-        }
 
         if (HasActive())
             StartCoroutine(HeroTurns());
     }
    
+    private Fight CreateFight(Vector3 position, DNA dna)
+    {
+        Fight newFight = Instantiate(FightPrefab, position, FightPrefab.transform.rotation).GetComponent<Fight>();
+        newFight.StartFight(dna);
+        newFight.name = "Fight " + (fightList.Count + 1);
+        return newFight;
+    }
 
     Fight GetFittest()
     {

@@ -2,17 +2,27 @@
 
 public class Hero : MonoBehaviour
 {
-
-    public float damage = 10;
+    [Header("Stats")]
     public float buffedDamage = 30;
     public float baseDamage = 10;
-    public float health = 50;
+    public float Damage { get; set; }
+    public float Health { get; set; }
+    public float maxHealth = 50;
     private bool defending = false;
     private int turnsBuffed = 0;
     private int buffedTurns = 1;
+    public bool IsDead { get; set; }
+
+    [Header("DNA")]
     public DNA dna;
 
-    public bool isDead = false;
+    public Animator anim;
+
+    private void Awake()
+    {
+        Damage = baseDamage;
+        Health = maxHealth;
+    }
 
     public void InitHero(DNA newDna)
     {
@@ -27,19 +37,21 @@ public class Hero : MonoBehaviour
     public void Buff()
     {
         turnsBuffed = buffedTurns;
-        damage = buffedDamage;
+        Damage = buffedDamage;
     }
 
     public void TurnEnd()
     {
         if (turnsBuffed-- <= 0)
-            damage = baseDamage;
+            Damage = baseDamage;
     }
 
     public void Hit(float damage)
     {
-        if (!defending) health -= damage;
-        isDead = health <= 0;
+        if (!defending)
+            Health = Mathf.Clamp(Health - damage, 0, maxHealth);
+        if (Health <= 0)
+            IsDead = true;
     }
 
     public void TurnStart()

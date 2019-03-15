@@ -2,6 +2,7 @@
 
 public class Boss : MonoBehaviour
 {
+    [Header("Stats")]
     public float damage = 30;
     public float health = 300;
     public float maxHealth = 500;
@@ -11,7 +12,8 @@ public class Boss : MonoBehaviour
     public void Hit(float damage)
     {
         health = Mathf.Clamp(health - damage, 0, maxHealth);
-        IsDead = health <= 0;
-       
+        if (health <= 0)
+            IsDead = true;
+
     }
 }

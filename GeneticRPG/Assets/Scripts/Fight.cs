@@ -11,41 +11,36 @@ public class Fight : MonoBehaviour
     public Transform bossSpawn;
 
     public bool hasFinished;
-    public int nextAction;
-
-    Vector2 target;
-    Vector2 nextPoint;
+    public int turnCount;
 
     public void StartFight(DNA dna)
     {
         hero = Instantiate(hero,heroSpawn);
         boss = Instantiate(boss,bossSpawn);
         hero.InitHero(dna);
-        //StartCoroutine(HeroTurn());
     }
     
     public float fightScore
     {
         get
         {
-            float score = nextAction * 20 + (boss.maxHealth - boss.health);
-            if (boss.IsDead) { score += 1000 / nextAction; }
+            float score = turnCount * 20 + (boss.maxHealth - boss.health);
+            if (boss.IsDead) { score += 1000 / turnCount; }
             return score;
         }
     }
 
     public void HeroTurn()
     {
-        // TODO OUTSIDE FOR HERE ON FIGHT CONTROLLER, DO NOT COROUTINE ON EVERY FIGHT
-        //yield return new WaitForSeconds(0.03f);
         hero.TurnStart();
 
-        if (nextAction < hero.dna.genes.Count && !boss.IsDead)
+        if (turnCount < hero.dna.genes.Count && !boss.IsDead)
         {
-            switch (hero.dna.genes[nextAction])
+            switch (hero.dna.genes[turnCount])
             {
                 case DNA.Actions.ATTACK:
-                    boss.Hit(hero.damage);
+                    //hero.anim.SetTrigger("Attack");
+                    boss.Hit(hero.Damage);
                     break;
                 case DNA.Actions.DEFEND:
                     hero.Defend();
@@ -55,25 +50,20 @@ public class Fight : MonoBehaviour
                     break;
             }
 
-            nextAction++;
+            turnCount++;
             hero.TurnEnd();
         }
         else
-        {
             hasFinished = true;
-        }
     }
 
 
     public void BossTurn()
     {
-        // TODO OUTSIDE FOR HERE ON FIGHT CONTROLLER, DO NOT COROUTINE ON EVERY FIGHT
-        //yield return new WaitForSeconds(0.03f);
-        if (nextAction % boss.attackTemp == 0)
+        if (turnCount % boss.attackTemp == 0)
             hero.Hit(boss.damage);
-        if (hero.isDead)
+        if (hero.IsDead)
             hasFinished = true;
-        
     }
 
 }
