@@ -12,12 +12,14 @@ public class FightController : MonoBehaviour
     public float cutoff = 0.3f;
     public float timePerTurn = 0.2f;
     private int fightCount;
-    private float gen = 0;
+    private int gen = 1;
+    private bool populated;
+    private bool paused;
     
     /// <summary>
     /// creates the 1st random population of fights
     /// </summary>
-    void InitPopulation()
+    public void Populate()
     {
         for(int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
@@ -25,6 +27,8 @@ public class FightController : MonoBehaviour
 
         StartCoroutine(HeroTurns());
         fightCount = rows * columns;
+        populated = true;
+
     }
 
     /// <summary>
@@ -32,15 +36,13 @@ public class FightController : MonoBehaviour
     /// </summary>
     void NextGeneration()
     {
+        Interface.instance.CreateDataDisplay(fightList, gen);
+
         // Get survivors (the best fighters)
         int survivorCut = Mathf.RoundToInt(fightCount * cutoff);
         List<Fight> survivors = new List<Fight>();
         for(int i = 0; i < survivorCut; i++)
             survivors.Add(GetFittest());
-
-        Debug.Log("Gen: " + ++gen + " Survivors: " + survivors.Count);
-        Fight bestFight = survivors[0];
-        Debug.Log("Best fighter. Score: " + bestFight.fightScore + " Boss Health: " + bestFight.boss.health + " / " + bestFight.boss.maxHealth + " Total turns: " + bestFight.turnCount + " Hero Health: " + bestFight.hero.Health + " Name : " + bestFight.name);
 
         // Destroy every other fight
         for (int i = 0; i < fightList.Count; i++)
@@ -53,24 +55,15 @@ public class FightController : MonoBehaviour
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
                 fightList.Add(CreateFight(new Vector3(j * 10, 0, i * 5), new DNA(survivors[i].hero.dna, survivors[Random.Range(0, 10)].hero.dna)));
-
+         
         StartCoroutine(HeroTurns());
 
         // Destroy survivors list
         for (int i = 0; i < survivors.Count; i++)
             Destroy(survivors[i].gameObject);
+
     }
 
-    private void Start()
-    {
-        InitPopulation();
-    }
-
-    private void Update()
-    {
-        if (!HasActive())
-            NextGeneration();
-    }
 
     private IEnumerator HeroTurns()
     {
@@ -82,6 +75,8 @@ public class FightController : MonoBehaviour
 
         if (HasActive())
             StartCoroutine(BossTurns());
+        else if (!paused)
+            NextGeneration();
     }
 
     private IEnumerator BossTurns()
@@ -94,6 +89,8 @@ public class FightController : MonoBehaviour
 
         if (HasActive())
             StartCoroutine(HeroTurns());
+        else if (!paused)
+            NextGeneration();
     }
    
     private Fight CreateFight(Vector3 position, DNA dna)
@@ -130,4 +127,11 @@ public class FightController : MonoBehaviour
         }
         return false;
     }
+
+    public void TogglePause()
+    {
+        paused = !paused;
+    }
+
+
 }
