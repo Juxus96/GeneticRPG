@@ -39,7 +39,7 @@ public class Fight : MonoBehaviour
             switch (hero.dna.genes[turnCount])
             {
                 case DNA.Actions.ATTACK:
-                    //hero.anim.SetTrigger("Attack");
+                    hero.anim.SetTrigger("Attack");
                     boss.Hit(hero.Damage);
                     break;
                 case DNA.Actions.DEFEND:

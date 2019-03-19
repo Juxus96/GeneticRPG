@@ -6,10 +6,12 @@ public class FightController : MonoBehaviour
 {
     List<Fight> fightList = new List<Fight>();
     public GameObject FightPrefab;
-    public int FightCount = 10;
+    public int rows = 10;
+    public int columns = 10;
     public int fightSteps = 10;
     public float cutoff = 0.3f;
     public float timePerTurn = 0.2f;
+    private int fightCount;
     private float gen = 0;
     
     /// <summary>
@@ -17,11 +19,12 @@ public class FightController : MonoBehaviour
     /// </summary>
     void InitPopulation()
     {
-        for(int i = 0; i < FightCount; i++)
-            fightList.Add(CreateFight(new Vector3(0, 0, i * 5), new DNA(fightSteps)));
+        for(int i = 0; i < rows; i++)
+            for (int j = 0; j < columns; j++)
+                fightList.Add(CreateFight(new Vector3(j * 10, 0, i * 5), new DNA(fightSteps)));
 
         StartCoroutine(HeroTurns());
-        
+        fightCount = rows * columns;
     }
 
     /// <summary>
@@ -30,14 +33,14 @@ public class FightController : MonoBehaviour
     void NextGeneration()
     {
         // Get survivors (the best fighters)
-        int survivorCut = Mathf.RoundToInt(FightCount * cutoff);
+        int survivorCut = Mathf.RoundToInt(fightCount * cutoff);
         List<Fight> survivors = new List<Fight>();
         for(int i = 0; i < survivorCut; i++)
             survivors.Add(GetFittest());
 
-        Debug.Log("Gen: " + gen++ + " Survivors: " + survivors.Count);
+        Debug.Log("Gen: " + ++gen + " Survivors: " + survivors.Count);
         Fight bestFight = survivors[0];
-        Debug.Log("Best fighter. Score: " + bestFight.fightScore + " Boss Health: " + bestFight.boss.health + " / " + bestFight.boss.maxHealth + " Total turns: " + bestFight.turnCount + " Hero Health: " + bestFight.hero.Health);
+        Debug.Log("Best fighter. Score: " + bestFight.fightScore + " Boss Health: " + bestFight.boss.health + " / " + bestFight.boss.maxHealth + " Total turns: " + bestFight.turnCount + " Hero Health: " + bestFight.hero.Health + " Name : " + bestFight.name);
 
         // Destroy every other fight
         for (int i = 0; i < fightList.Count; i++)
@@ -47,9 +50,9 @@ public class FightController : MonoBehaviour
         fightList.Clear();
 
         // Create new fights
-        while (fightList.Count < FightCount)
-            for (int i = 0; i < survivors.Count && fightList.Count < FightCount; i++)
-                fightList.Add(CreateFight(new Vector3(0, 0, i * 5), new DNA(survivors[i].hero.dna, survivors[Random.Range(0, 10)].hero.dna)));
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < columns; j++)
+                fightList.Add(CreateFight(new Vector3(j * 10, 0, i * 5), new DNA(survivors[i].hero.dna, survivors[Random.Range(0, 10)].hero.dna)));
 
         StartCoroutine(HeroTurns());
 
@@ -120,7 +123,6 @@ public class FightController : MonoBehaviour
 
     bool HasActive()
     {
-        
         for (int i = 0; i < fightList.Count; i++)
         {
             if (!fightList[i].hasFinished)
