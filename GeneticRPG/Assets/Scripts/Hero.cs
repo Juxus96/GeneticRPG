@@ -51,7 +51,10 @@ public class Hero : MonoBehaviour
         if (!defending)
             Health = Mathf.Clamp(Health - damage, 0, maxHealth);
         if (Health <= 0)
+        {
             IsDead = true;
+            anim.SetTrigger("Die");
+        }
     }
 
     public void TurnStart()

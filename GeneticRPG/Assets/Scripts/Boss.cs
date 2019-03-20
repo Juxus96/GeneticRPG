@@ -6,14 +6,20 @@ public class Boss : MonoBehaviour
     public float damage = 30;
     public float health = 300;
     public float maxHealth = 500;
-    public int attackTemp = 3;
+    private bool defending = false;
     public bool IsDead { get; set; }
 
     public BossBehaviour currentBehaviour;
 
+    public void Defend()
+    {
+        defending = true;
+    }
+
     public void Hit(float damage)
     {
-        health = Mathf.Clamp(health - damage, 0, maxHealth);
+        if (!defending)
+            health = Mathf.Clamp(health - damage, 0, maxHealth);
 
         if (health <= 0)
             IsDead = true;

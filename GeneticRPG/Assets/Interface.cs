@@ -19,6 +19,9 @@ public class Interface : MonoBehaviour
     [SerializeField] private Color deadFightColor;
     [SerializeField] private Color[] actionColors;
 
+    private float oldTimeScale = 1;
+    private bool paused;
+
     private void Awake()
     {
         instance = this;
@@ -30,12 +33,15 @@ public class Interface : MonoBehaviour
             fight.gameObject.SetActive(false);
     }
 
-    public void CreateDataDisplay(List<Fight> fightList, int genCount)
+    public void DisplayGen(int genCount)
+    {
+        genCountText.text = "Generation " + genCount;
+    }
+
+    public void CreateDataDisplay(List<Fight> fightList)
     {
         ClearDataDisplay();
         ClearActionDisplay();
-
-        genCountText.text = "Generation " + genCount;
 
         fightList.Sort((f1, f2) => f2.fightScore.CompareTo(f1.fightScore));
 
@@ -102,5 +108,18 @@ public class Interface : MonoBehaviour
     public void ChangeTimeScale(float value)
     {
         Time.timeScale = value;
+    }
+
+    public void TogglePause()
+    {
+        paused = !paused;
+        if (paused)
+        {
+            oldTimeScale = Time.timeScale;
+            ChangeTimeScale(0);
+        }
+        else
+            ChangeTimeScale(oldTimeScale);
+
     }
 }

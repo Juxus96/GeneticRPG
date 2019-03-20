@@ -14,7 +14,7 @@ public class FightController : MonoBehaviour
     private int fightCount;
     private int gen = 1;
     private bool populated;
-    private bool paused;
+   
     public BossBehaviour bossBehaviour;
 
     /// <summary>
@@ -31,6 +31,7 @@ public class FightController : MonoBehaviour
 
             StartCoroutine(HeroTurns());
             fightCount = rows * columns;
+            Interface.instance.DisplayGen(gen);
         }
     }
 
@@ -39,7 +40,8 @@ public class FightController : MonoBehaviour
     /// </summary>
     void NextGeneration()
     {
-        Interface.instance.CreateDataDisplay(fightList, gen++);
+        Interface.instance.CreateDataDisplay(fightList);
+        Interface.instance.DisplayGen(++gen);
 
         // Get survivors (the best fighters)
         int survivorCut = Mathf.RoundToInt(fightCount * cutoff);
@@ -96,7 +98,7 @@ public class FightController : MonoBehaviour
 
         if (HasActive())
             StartCoroutine(BossTurns());
-        else if (!paused)
+        else
             NextGeneration();
     }
 
@@ -110,7 +112,7 @@ public class FightController : MonoBehaviour
 
         if (HasActive())
             StartCoroutine(HeroTurns());
-        else if (!paused)
+        else
             NextGeneration();
     }
    
@@ -147,11 +149,6 @@ public class FightController : MonoBehaviour
                 return true;
         }
         return false;
-    }
-
-    public void TogglePause()
-    {
-        paused = !paused;
     }
 
     public void SetBossBehaviour(BossBehaviour _bossBehaviour)

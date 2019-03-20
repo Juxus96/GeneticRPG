@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 [System.Serializable]
 public class Fight : MonoBehaviour
@@ -41,10 +40,11 @@ public class Fight : MonoBehaviour
             switch (hero.dna.genes[turnCount])
             {
                 case DNA.Actions.ATTACK:
-                    hero.anim.SetTrigger("Attack");
+                    hero.anim.SetTrigger("Attack 01");
                     boss.Hit(hero.Damage);
                     break;
                 case DNA.Actions.DEFEND:
+                    hero.anim.SetTrigger("Defend");
                     hero.Defend();
                     break;
                 case DNA.Actions.BUFF:
@@ -61,11 +61,24 @@ public class Fight : MonoBehaviour
 
     public void BossTurn()
     {
-        // SWITCH PER ACTION
-        if (turnCount % boss.attackTemp == 0)
-            hero.Hit(boss.damage);
-        if (hero.IsDead)
-            hasFinished = true;
+        int turnRate = turnCount % boss.currentBehaviour.bossBehaviour.Length;
+
+        switch (boss.currentBehaviour.bossBehaviour[turnRate])
+        {
+            case BossBehaviour.actionType.ATTACK:
+                hero.Hit(boss.damage);
+                if (hero.IsDead)
+                    hasFinished = true;
+                break;
+            case BossBehaviour.actionType.DEFEND:
+                boss.Defend();
+                break;
+            case BossBehaviour.actionType.NONE:
+                break;
+            default:
+                break;
+        }
+
     }
 
 }
