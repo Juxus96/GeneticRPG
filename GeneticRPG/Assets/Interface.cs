@@ -17,6 +17,7 @@ public class Interface : MonoBehaviour
     [SerializeField] private Color bestFightColor;
     [SerializeField] private Color survivedFightColor;
     [SerializeField] private Color deadFightColor;
+    [SerializeField] private Color[] actionColors;
 
     private void Awake()
     {
@@ -32,6 +33,7 @@ public class Interface : MonoBehaviour
     public void CreateDataDisplay(List<Fight> fightList, int genCount)
     {
         ClearDataDisplay();
+        ClearActionDisplay();
 
         genCountText.text = "Generation " + genCount;
 
@@ -70,15 +72,35 @@ public class Interface : MonoBehaviour
         gameObject.SetActive(!gameObject.activeSelf);
     }
 
+    public void ClearActionDisplay()
+    {
+        foreach (Transform action in actionScrollDisplay)
+            action.gameObject.SetActive(false);
+
+        bestFightNameText.text = "";
+    }
+
     public void SelectFight(Fight fight)
     {
+        ClearActionDisplay();
+
+        bestFightNameText.text = fight.nameGo;
+
         List<DNA.Actions> genes = fight.hero.dna.genes;
         for (int i = 0; i < genes.Count; i++)
         {
             GameObject newAction = Instantiate(actionUI_Prefab, actionScrollDisplay);
             newAction.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = genes[i].ToString();
+            newAction.transform.SetSiblingIndex(i);
+            newAction.GetComponent<Image>().color = actionColors[(int)genes[i]];
         }
+
+        for (int i = genes.Count; i < actionScrollDisplay.childCount; i++)
+            Destroy(actionScrollDisplay.GetChild(i).gameObject);
     }
 
-    
+    public void ChangeTimeScale(float value)
+    {
+        Time.timeScale = value;
+    }
 }

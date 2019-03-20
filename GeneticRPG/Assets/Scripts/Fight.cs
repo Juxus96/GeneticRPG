@@ -4,7 +4,7 @@ using UnityEngine;
 [System.Serializable]
 public class Fight : MonoBehaviour
 {
-
+    [HideInInspector] public string nameGo; 
     public Hero hero;
     public Transform heroSpawn;
     public Boss boss;
@@ -13,11 +13,13 @@ public class Fight : MonoBehaviour
     public bool hasFinished;
     public int turnCount;
 
-    public void StartFight(DNA dna)
+
+    public void StartFight(DNA dna, BossBehaviour newBehaviour)
     {
         hero = Instantiate(hero,heroSpawn);
         boss = Instantiate(boss,bossSpawn);
         hero.InitHero(dna);
+        if (newBehaviour) boss.currentBehaviour = newBehaviour;
     }
     
     public float fightScore
@@ -57,9 +59,9 @@ public class Fight : MonoBehaviour
             hasFinished = true;
     }
 
-
     public void BossTurn()
     {
+        // SWITCH PER ACTION
         if (turnCount % boss.attackTemp == 0)
             hero.Hit(boss.damage);
         if (hero.IsDead)
@@ -67,3 +69,4 @@ public class Fight : MonoBehaviour
     }
 
 }
+
