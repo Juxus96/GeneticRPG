@@ -14,8 +14,15 @@ public class FightController : MonoBehaviour
     private int fightCount;
     private int gen = 1;
     private bool populated;
+    private Transform fightContainer;
    
     public BossBehaviour bossBehaviour;
+
+    private void Awake()
+    {
+        fightContainer = new GameObject().transform;
+        fightContainer.name = "FightContainer";
+    }
 
     /// <summary>
     /// creates the 1st random population of fights
@@ -121,6 +128,7 @@ public class FightController : MonoBehaviour
         Fight newFight = Instantiate(FightPrefab, position, FightPrefab.transform.rotation).GetComponent<Fight>();
         newFight.StartFight(dna, bossBehaviour);
         newFight.name = newFight.nameGo ="Fight " + (fightList.Count + 1);
+        newFight.transform.parent = fightContainer;
         return newFight;
     }
 

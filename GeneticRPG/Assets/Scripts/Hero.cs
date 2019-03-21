@@ -49,7 +49,10 @@ public class Hero : MonoBehaviour
     public void Hit(float damage)
     {
         if (!defending)
+        {
             Health = Mathf.Clamp(Health - damage, 0, maxHealth);
+            Interface.instance.SpawnDamageText(transform.position + Vector3.up, damage);
+        }
         if (Health <= 0)
         {
             IsDead = true;

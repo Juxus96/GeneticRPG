@@ -9,6 +9,8 @@ public class Boss : MonoBehaviour
     private bool defending = false;
     public bool IsDead { get; set; }
 
+    public Animator anim;
+
     public BossBehaviour currentBehaviour;
 
     public void Defend()
@@ -19,10 +21,16 @@ public class Boss : MonoBehaviour
     public void Hit(float damage)
     {
         if (!defending)
+        {
             health = Mathf.Clamp(health - damage, 0, maxHealth);
+            Interface.instance.SpawnDamageText(transform.position + Vector3.up, damage);
+        }
 
         if (health <= 0)
+        {
             IsDead = true;
+            anim.SetTrigger("die");
+        }
     }
 }
 

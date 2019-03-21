@@ -42,6 +42,7 @@ public class Fight : MonoBehaviour
                 case DNA.Actions.ATTACK:
                     hero.anim.SetTrigger("Attack 01");
                     boss.Hit(hero.Damage);
+                   
                     break;
                 case DNA.Actions.DEFEND:
                     hero.anim.SetTrigger("Defend");
@@ -66,11 +67,13 @@ public class Fight : MonoBehaviour
         switch (boss.currentBehaviour.bossBehaviour[turnRate])
         {
             case BossBehaviour.actionType.ATTACK:
+                boss.anim.SetTrigger("Attack 01");
                 hero.Hit(boss.damage);
                 if (hero.IsDead)
                     hasFinished = true;
                 break;
             case BossBehaviour.actionType.DEFEND:
+                // defense animation here
                 boss.Defend();
                 break;
             case BossBehaviour.actionType.NONE:
