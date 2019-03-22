@@ -27,7 +27,7 @@ public class Fight : MonoBehaviour
     {
             float score = 0;
             if (boss.IsDead) score = 10000 + 300000 / turnCount;
-            else score = turnCount * 20 + (boss.maxHealth - boss.health) + hero.Health;
+            else score = turnCount * 20 + (boss.maxHealth - boss.health);
             return score;
         }
     }
@@ -56,7 +56,7 @@ public class Fight : MonoBehaviour
             turnCount++;
             hero.TurnEnd();
         }
-        else if(boss.IsDead || turnCount >= hero.dna.genes.Count)
+        if(boss.IsDead || turnCount >= hero.dna.genes.Count)
             hasFinished = true;
     }
 
