@@ -24,9 +24,10 @@ public class Fight : MonoBehaviour
     public float fightScore
     {
         get
-        {
-            float score = turnCount * 20 + (boss.maxHealth - boss.health);
-            if (boss.IsDead) { score += 1000 / turnCount; }
+    {
+            float score = 0;
+            if (boss.IsDead) score = 10000 + 300000 / turnCount;
+            else score = turnCount * 20 + (boss.maxHealth - boss.health) + hero.Health;
             return score;
         }
     }
@@ -35,14 +36,13 @@ public class Fight : MonoBehaviour
     {
         hero.TurnStart();
 
-        if (turnCount < hero.dna.genes.Count && !boss.IsDead)
+        if (turnCount < hero.dna.genes.Count && !hero.IsDead)
         {
             switch (hero.dna.genes[turnCount])
             {
                 case DNA.Actions.ATTACK:
                     hero.anim.SetTrigger("Attack 01");
                     boss.Hit(hero.Damage);
-                   
                     break;
                 case DNA.Actions.DEFEND:
                     hero.anim.SetTrigger("Defend");
@@ -56,7 +56,7 @@ public class Fight : MonoBehaviour
             turnCount++;
             hero.TurnEnd();
         }
-        else
+        else if(boss.IsDead || turnCount >= hero.dna.genes.Count)
             hasFinished = true;
     }
 
@@ -69,8 +69,6 @@ public class Fight : MonoBehaviour
             case BossBehaviour.actionType.ATTACK:
                 boss.anim.SetTrigger("Attack 01");
                 hero.Hit(boss.damage);
-                if (hero.IsDead)
-                    hasFinished = true;
                 break;
             case BossBehaviour.actionType.DEFEND:
                 // defense animation here
@@ -82,6 +80,8 @@ public class Fight : MonoBehaviour
                 break;
         }
 
+        if (hero.IsDead)
+            hasFinished = true;
     }
 
 }

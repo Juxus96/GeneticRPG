@@ -11,7 +11,7 @@ public class Hero : MonoBehaviour
     private bool defending = false;
     private int turnsBuffed = 0;
     private int buffedTurns = 1;
-    public bool IsDead { get; set; }
+    public bool IsDead;
 
     [Header("DNA")]
     public DNA dna;

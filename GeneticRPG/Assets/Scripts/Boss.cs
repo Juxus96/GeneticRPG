@@ -7,7 +7,7 @@ public class Boss : MonoBehaviour
     public float health = 300;
     public float maxHealth = 500;
     private bool defending = false;
-    public bool IsDead { get; set; }
+    public bool IsDead;
 
     public Animator anim;
 

@@ -6339,7 +6339,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: 0
+  m_firstOverflowCharacterIndex: -1
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0
@@ -6588,9 +6588,9 @@ MonoBehaviour:
     type: 3}
   rows: 10
   columns: 10
-  fightSteps: 49
+  fightSteps: 70
   cutoff: 0.3
-  timePerTurn: 0.5
+  timePerTurn: 0.2
   bossBehaviour: {fileID: 0}
 --- !u!1 &1854845018
 GameObject:
