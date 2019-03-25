@@ -12,7 +12,9 @@ public class Fight : MonoBehaviour
     public bool hasFinished;
     public int turnCount;
 
-
+    /// <summary>
+    /// Sets the Fight Data
+    /// </summary>
     public void StartFight(DNA dna, BossBehaviour newBehaviour)
     {
         hero = Instantiate(hero,heroSpawn);
@@ -21,6 +23,9 @@ public class Fight : MonoBehaviour
         if (newBehaviour) boss.currentBehaviour = newBehaviour;
     }
     
+    /// <summary>
+    /// Returns score based on fight performance
+    /// </summary>
     public float fightScore
     {
         get
@@ -32,6 +37,9 @@ public class Fight : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the turn of the Hero
+    /// </summary>
     public void HeroTurn()
     {
         hero.TurnStart();
@@ -60,6 +68,9 @@ public class Fight : MonoBehaviour
             hasFinished = true;
     }
 
+    /// <summary>
+    /// Handles the turn of the Boss
+    /// </summary>
     public void BossTurn()
     {
         int turnRate = turnCount % boss.currentBehaviour.bossBehaviour.Length;

@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// Handles UI and Data Display
+/// </summary>
 public class Interface : MonoBehaviour
 {
     public static Interface instance;
@@ -44,6 +47,10 @@ public class Interface : MonoBehaviour
         genCountText.text = "Generation " + genCount;
     }
 
+    /// <summary>
+    /// Displays the data after every generation
+    /// </summary>
+    /// <param name="fightList"></param>
     public void CreateDataDisplay(List<Fight> fightList)
     {
         ClearDataDisplay();
@@ -53,6 +60,7 @@ public class Interface : MonoBehaviour
 
         for (int i = 0; i < fightList.Count; i++)
         {
+            // Creates panel with the fight's information
             Fight currentFight = fightList[i];
             Transform newFight = Instantiate(fightUI_Prefab, fightScrollDisplay).transform;
             newFight.SetSiblingIndex(i);
@@ -92,6 +100,10 @@ public class Interface : MonoBehaviour
         bestFightNameText.text = "";
     }
 
+    /// <summary>
+    /// Displays the fight genome (actions made by the Hero)
+    /// </summary>
+    /// <param name="fight"></param>
     public void SelectFight(Fight fight)
     {
         ClearActionDisplay();

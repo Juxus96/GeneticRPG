@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Main Character that has to kill the Boss
+/// </summary>
 public class Hero : MonoBehaviour
 {
     [Header("Stats")]
@@ -34,18 +37,28 @@ public class Hero : MonoBehaviour
         defending = true;
     }
 
+    /// <summary>
+    /// Buff the current unit giving it more damage
+    /// </summary>
     public void Buff()
     {
         turnsBuffed = buffedTurns;
         Damage = buffedDamage;
     }
 
+    /// <summary>
+    /// At the end of the turn we remove the buffed effect, only if it has run out of time
+    /// </summary>
     public void TurnEnd()
     {
         if (turnsBuffed-- <= 0)
             Damage = baseDamage;
     }
 
+    /// <summary>
+    /// Deals damage to this unit with the given value, unless it's defending
+    /// </summary>
+    /// <param name="damage"></param>
     public void Hit(float damage)
     {
         if (!defending)

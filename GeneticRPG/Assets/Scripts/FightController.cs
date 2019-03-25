@@ -25,7 +25,7 @@ public class FightController : MonoBehaviour
     }
 
     /// <summary>
-    /// creates the 1st random population of fights
+    /// Creates the 1st random population of fights
     /// </summary>
     public void Populate()
     {
@@ -76,6 +76,9 @@ public class FightController : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Resets the population
+    /// </summary>
     public void Restart()
     {
         if (populated)
@@ -95,6 +98,10 @@ public class FightController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the turns of the heroes
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator HeroTurns()
     {
         yield return new WaitForSeconds(timePerTurn);
@@ -109,6 +116,10 @@ public class FightController : MonoBehaviour
             NextGeneration();
     }
 
+    /// <summary>
+    /// Handles the turns of the bosses
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator BossTurns()
     {
         yield return new WaitForSeconds(timePerTurn);
@@ -122,7 +133,10 @@ public class FightController : MonoBehaviour
         else
             NextGeneration();
     }
-   
+    
+    /// <summary>
+    /// Creates fight in the given position with the given Hero Data (DNA) and Boss Data (BossHevaviour)
+    /// </summary>
     private Fight CreateFight(Vector3 position, DNA dna, BossBehaviour bossBehaviour)
     {
         Fight newFight = Instantiate(FightPrefab, position, FightPrefab.transform.rotation).GetComponent<Fight>();
@@ -132,6 +146,10 @@ public class FightController : MonoBehaviour
         return newFight;
     }
 
+    /// <summary>
+    /// Get the best fight out of the fight list (removing it from the list)
+    /// </summary>
+    /// <returns></returns>
     Fight GetFittest()
     {
         float maxFightScore = float.MinValue;
@@ -149,6 +167,10 @@ public class FightController : MonoBehaviour
         return bestFight;
     }
 
+    /// <summary>
+    /// Checks if the turns are still running
+    /// </summary>
+    /// <returns></returns>
     bool HasActive()
     {
         for (int i = 0; i < fightList.Count; i++)
